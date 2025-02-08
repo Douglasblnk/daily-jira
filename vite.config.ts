@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import vue from '@vitejs/plugin-vue'
 import Unocss from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -9,13 +10,10 @@ import Components from 'unplugin-vue-components/vite'
 
 import { defineConfig } from 'vite'
 
-import vueDevTools from 'vite-plugin-vue-devtools'
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-    vueDevTools(),
     AutoImport({
       include: [
         /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
@@ -40,6 +38,7 @@ export default defineConfig({
         'vue',
         'vue/macros',
         'pinia',
+        'quasar',
       ],
     }),
     Components({
@@ -56,6 +55,12 @@ export default defineConfig({
       compiler: 'vue3',
     }),
     Unocss(),
+    quasar({
+      autoImportComponentCase: 'pascal',
+      sassVariables: fileURLToPath(
+        new URL('./src/styles/quasar-variables.sass', import.meta.url),
+      ),
+    }),
   ],
   resolve: {
     alias: {
