@@ -5,10 +5,6 @@ export default antfu({
   vue: true,
   rules: {
     '@typescript-eslint/no-namespace': 'off',
-    'curly': [
-      'error',
-      'all',
-    ],
     'vue/max-attributes-per-line': [
       'error',
       {

@@ -89,6 +89,10 @@
     "watch": true,
     "watchEffect": true,
     "watchPostEffect": true,
-    "watchSyncEffect": true
+    "watchSyncEffect": true,
+    "useDialogPluginComponent": true,
+    "useFormChild": true,
+    "useMeta": true,
+    "useQuasar": true
   }
 }
