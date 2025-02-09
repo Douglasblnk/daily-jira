@@ -70,6 +70,9 @@ export default defineConfig({
   server: {
     open: '/newtab.html',
   },
+  optimizeDeps: {
+    exclude: [ 'vuedraggable' ],
+  },
   build: {
     rollupOptions: {
       input: {

@@ -1,14 +1,18 @@
 <script lang="ts" setup>
+import type { QMenu } from 'quasar'
 import { useStorage } from '@vueuse/core'
-import { QMenu } from 'quasar'
+import Draggable from 'vuedraggable/src/vuedraggable'
+import AddShortcutMenu from './AddShortcutMenu.vue'
 
-const shortcuts = useStorage<{
+interface Shortcuts {
   ico: string
   url: string
-}[]>('shortcuts', [])
+}
 
-const editShortcutRef = ref<QMenu[]>()
-const editingShortcutRef = ref<{ addShortcutMenuRef: QMenu }[]>()
+const shortcuts = useStorage<Shortcuts[]>('shortcuts', [])
+
+const editShortcutRef = ref<Record<string, any>>({})
+const editingShortcutRef = ref<Record<string, any>>({})
 
 function saveShortcut(value: string) {
   shortcuts.value.push({
@@ -35,6 +39,10 @@ function deleteShortcut(index: number) {
 
   editShortcutRef.value?.[index]?.hide()
 }
+
+function handleDraggable(data: Shortcuts[]) {
+  shortcuts.value = data
+}
 </script>
 
 <template>
@@ -45,83 +53,92 @@ function deleteShortcut(index: number) {
     un-gap-sm
     un-mt-7xl
   >
-    <QBtn
-      v-for="(shortcut, index) in shortcuts"
-      :key="`shortcuts-${index}`"
-      un-p="y-md x-lg"
-      un-rounded-3xl
-      un-cursor-pointer
-      un-select-none
-      un-transition="all"
-      un-hover-bg="#2f313a/70"
-      un-hover-translate-y--1
-      un-hover-scale-105
-      un-active-scale-100
-      un-bg="#2f313a/30"
-      un-flex
-      un-justify-center
-      un-items-center
-      un-gap-lg
-      flat
-      :href="shortcut.url"
-      :draggable="false"
+    <Draggable
+      item-key="url"
+      animation="150"
+      type="transition-group"
+      :model-value="shortcuts"
+      :component-data="{ class: 'flex gap-sm' }"
+      @update:model-value="handleDraggable"
     >
-      <img
-        un-w-10
-        un-h-10
-        :draggable="false"
-        :src="shortcut.ico"
-      >
-
-      <QMenu
-        ref="editShortcutRef"
-        touch-position
-        context-menu
-      >
-        <QList un-space-y-xs>
-          <QItem
-            v-ripple
-            clickable
-            @click="editShortcut(index)"
+      <template #item="{ element: item, index }">
+        <QBtn
+          :key="`shortcuts-${index}-${item.url}`"
+          un-p="y-md x-lg"
+          un-rounded-3xl
+          un-cursor-pointer
+          un-select-none
+          un-transition="all"
+          un-hover-bg="#2f313a/70"
+          un-hover-translate-y--1
+          un-hover-scale-105
+          un-active-scale-100
+          un-bg="#2f313a/30"
+          un-flex
+          un-justify-center
+          un-items-center
+          un-gap-lg
+          flat
+          :href="item.url"
+        >
+          <img
+            un-w-10
+            un-h-10
+            :draggable="false"
+            :src="item.ico"
           >
-            <QItemSection avatar>
-              <i
-                class="i-mdi-pencil-outline"
-                un-text-md
-              />
-            </QItemSection>
 
-            <QItemSection un-font-bold>
-              Editar
-            </QItemSection>
-          </QItem>
-
-          <QItem
-            v-ripple
-            clickable
-            @click="deleteShortcut(index)"
+          <QMenu
+            :ref="el => { editShortcutRef[index] = el }"
+            touch-position
+            context-menu
           >
-            <QItemSection avatar>
-              <i
-                class="i-mdi-trash-can-outline"
-                un-text-md
-              />
-            </QItemSection>
+            <QList un-space-y-xs>
+              <QItem
+                v-ripple
+                clickable
+                @click="editShortcut(index)"
+              >
+                <QItemSection avatar>
+                  <i
+                    class="i-mdi-pencil-outline"
+                    un-text-md
+                  />
+                </QItemSection>
 
-            <QItemSection un-font-bold>
-              Excluir
-            </QItemSection>
-          </QItem>
-        </QList>
-      </QMenu>
+                <QItemSection un-font-bold>
+                  Editar
+                </QItemSection>
+              </QItem>
 
-      <AddShortcutMenu
-        ref="editingShortcutRef"
-        context-menu
-        :value="shortcut.url"
-        @save-url="updateShortcut($event, index)"
-      />
-    </QBtn>
+              <QItem
+                v-ripple
+                clickable
+                @click="deleteShortcut(index)"
+              >
+                <QItemSection avatar>
+                  <i
+                    class="i-mdi-trash-can-outline"
+                    un-text-md
+                  />
+                </QItemSection>
+
+                <QItemSection un-font-bold>
+                  Excluir
+                </QItemSection>
+              </QItem>
+            </QList>
+          </QMenu>
+
+          <AddShortcutMenu
+            :ref="el => { editingShortcutRef[index] = el }"
+            context-menu
+            :value="item.url"
+            @save-url="updateShortcut($event, index)"
+          />
+        </QBtn>
+      </template>
+    </Draggable>
 
     <QBtn
       un-p-sm
