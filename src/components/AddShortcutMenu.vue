@@ -2,17 +2,24 @@
 import type { QMenu } from 'quasar'
 import { checkIsLink } from '@/utils'
 
+const props = defineProps<{
+  contextMenu?: boolean
+  value?: string
+}>()
+
 const emit = defineEmits<{
   saveUrl: [value: string]
 }>()
 
-const url = ref('')
+const url = ref(props.value)
 const addShortcutMenuRef = ref<QMenu>()
 
 const valideUrl = computed(() => checkIsLink(url.value))
 
 function saveUrl() {
-  emit('saveUrl', url.value)
+  if (url.value) {
+    emit('saveUrl', url.value)
+  }
 
   addShortcutMenuRef.value?.hide()
 }
@@ -20,13 +27,25 @@ function saveUrl() {
 function onHide() {
   url.value = ''
 }
+
+function onShow() {
+  if (props.value) {
+    url.value = props.value
+  }
+}
+
+defineExpose({
+  addShortcutMenuRef,
+})
 </script>
 
 <template>
   <QMenu
     ref="addShortcutMenuRef"
     cover
+    :context-menu="contextMenu"
     @hide="onHide"
+    @before-show="onShow"
   >
     <QCard un-w-100>
       <QCardSection

@@ -1,13 +1,39 @@
 <script lang="ts" setup>
 import { useStorage } from '@vueuse/core'
+import { QMenu } from 'quasar'
 
-const shortcuts = useStorage<Record<string, string>[]>('shortcuts', [])
+const shortcuts = useStorage<{
+  ico: string
+  url: string
+}[]>('shortcuts', [])
 
-function saveUrl(value: string) {
+const editShortcutRef = ref<QMenu[]>()
+const editingShortcutRef = ref<{ addShortcutMenuRef: QMenu }[]>()
+
+function saveShortcut(value: string) {
   shortcuts.value.push({
     ico: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${value}&size=48`,
     url: value,
   })
+}
+
+function updateShortcut(value: string, index: number) {
+  shortcuts.value.splice(index, 1, {
+    ico: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${value}&size=48`,
+    url: value,
+  })
+}
+
+function editShortcut(index: number) {
+  editShortcutRef.value?.[index]?.hide()
+
+  editingShortcutRef.value?.[index]?.addShortcutMenuRef?.show()
+}
+
+function deleteShortcut(index: number) {
+  shortcuts.value.splice(index, 1)
+
+  editShortcutRef.value?.[index]?.hide()
 }
 </script>
 
@@ -20,8 +46,8 @@ function saveUrl(value: string) {
     un-mt-7xl
   >
     <QBtn
-      v-for="shortcut in shortcuts"
-      :key="shortcut.ico"
+      v-for="(shortcut, index) in shortcuts"
+      :key="`shortcuts-${index}`"
       un-p="y-md x-lg"
       un-rounded-3xl
       un-cursor-pointer
@@ -46,6 +72,55 @@ function saveUrl(value: string) {
         :draggable="false"
         :src="shortcut.ico"
       >
+
+      <QMenu
+        ref="editShortcutRef"
+        touch-position
+        context-menu
+      >
+        <QList un-space-y-xs>
+          <QItem
+            v-ripple
+            clickable
+            @click="editShortcut(index)"
+          >
+            <QItemSection avatar>
+              <i
+                class="i-mdi-pencil-outline"
+                un-text-md
+              />
+            </QItemSection>
+
+            <QItemSection un-font-bold>
+              Editar
+            </QItemSection>
+          </QItem>
+
+          <QItem
+            v-ripple
+            clickable
+            @click="deleteShortcut(index)"
+          >
+            <QItemSection avatar>
+              <i
+                class="i-mdi-trash-can-outline"
+                un-text-md
+              />
+            </QItemSection>
+
+            <QItemSection un-font-bold>
+              Excluir
+            </QItemSection>
+          </QItem>
+        </QList>
+      </QMenu>
+
+      <AddShortcutMenu
+        ref="editingShortcutRef"
+        context-menu
+        :value="shortcut.url"
+        @save-url="updateShortcut($event, index)"
+      />
     </QBtn>
 
     <QBtn
@@ -70,7 +145,7 @@ function saveUrl(value: string) {
         un-text="white 3xl"
       />
 
-      <AddShortcutMenu @save-url="saveUrl" />
+      <AddShortcutMenu @save-url="saveShortcut" />
     </QBtn>
   </div>
 </template>
