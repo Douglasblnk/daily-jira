@@ -1,46 +1,13 @@
 <script lang="ts" setup>
-import type { QMenu } from 'quasar'
-import { checkIsLink } from '@/utils'
+import { useStorage } from '@vueuse/core'
 
-const url = ref()
-const addShortcutMenuRef = ref<QMenu>()
+const shortcuts = useStorage<Record<string, string>[]>('shortcuts', [])
 
-const shortcuts = ref<Record<string, string>[]>([
-  // {
-  //   ico: 'https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://facebook.com&size=48',
-  //   url: 'https://facebook.com',
-  // },
-  // {
-  //   ico: 'https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://instagram.com&size=48',
-  //   url: 'https://instagram.com',
-  // },
-  // {
-  //   ico: 'https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://youtube.com&size=48',
-  //   url: 'https://youtube.com',
-  // },
-  // {
-  //   ico: 'https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://drive.google.com&size=48',
-  //   url: 'https://drive.google.com',
-  // },
-  // {
-  //   ico: 'https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://netflix.com&size=48',
-  //   url: 'https://netflix.com',
-  // },
-])
-
-const valideUrl = computed(() => checkIsLink(url.value))
-
-function saveUrl() {
+function saveUrl(value: string) {
   shortcuts.value.push({
-    ico: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url.value}&size=48`,
-    url: url.value,
+    ico: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${value}&size=48`,
+    url: value,
   })
-
-  addShortcutMenuRef.value?.hide()
-}
-
-function onHide() {
-  url.value = ''
 }
 </script>
 
@@ -103,44 +70,7 @@ function onHide() {
         un-text="white 3xl"
       />
 
-      <QMenu
-        ref="addShortcutMenuRef"
-        cover
-        @hide="onHide"
-      >
-        <QCard un-w-100>
-          <QCardSection
-            un-text="lg center"
-            un-font-bold
-          >
-            Adicionar atalho
-          </QCardSection>
-
-          <QCardSection
-            un-text-md
-            un-font-bold
-            un-flex
-            un-gap-sm
-          >
-            <QInput
-              v-model="url"
-              outlined
-              style="flex-grow: 1;"
-              hide-bottom-space
-              hide-hint
-              label="URL"
-            />
-
-            <QBtn
-              un-bg-positive
-              :disable="!valideUrl"
-              @click="saveUrl"
-            >
-              Salvar
-            </QBtn>
-          </QCardSection>
-        </QCard>
-      </QMenu>
+      <AddShortcutMenu @save-url="saveUrl" />
     </QBtn>
   </div>
 </template>
