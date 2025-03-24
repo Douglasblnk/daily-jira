@@ -93,6 +93,16 @@
     "useDialogPluginComponent": true,
     "useFormChild": true,
     "useMeta": true,
-    "useQuasar": true
+    "useQuasar": true,
+    "octokit": true,
+    "useOctokit": true,
+    "useInfiniteQuery": true,
+    "useQuery": true,
+    "getPulls": true,
+    "getNeedMyReviewPulls": true,
+    "getAllPullRequests": true,
+    "useAlertsStore": true,
+    "useGithubStore": true,
+    "getPullRequestFiles": true
   }
 }
