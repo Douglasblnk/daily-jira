@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "New tab",
+  "description": "Substitui a nova aba padrão por uma personalizada.",
+  "version": "1.0",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "permissions": [],
+  "host_permissions": []
+}
