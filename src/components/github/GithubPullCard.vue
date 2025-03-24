@@ -10,8 +10,6 @@ defineProps<{
 
 const { copy } = useClipboard()
 
-const isDetailOpen = ref(false)
-
 function copyToClipboard(value: string) {
   copy(value)
 
@@ -26,13 +24,8 @@ function copyToClipboard(value: string) {
 <template>
   <QItem
     un-mb-sm
-    @click="isDetailOpen = !isDetailOpen"
   >
-    <GithubPullRequestDetails
-      v-model="isDetailOpen"
-      :pull="pull"
-      no-parent-event
-    />
+    <GithubPullRequestDetails :pull="pull" />
 
     <QAvatar
       size="md"
@@ -87,7 +80,7 @@ function copyToClipboard(value: string) {
             dense
             clickable
             :title="pull.base.ref"
-            @click="copyToClipboard(pull.base.ref)"
+            @click.stop="copyToClipboard(pull.base.ref)"
           >
             <span un-truncate>{{ pull.base.ref }}</span>
           </QChip>
@@ -105,7 +98,7 @@ function copyToClipboard(value: string) {
             dense
             clickable
             :title="pull.head.ref"
-            @click="copyToClipboard(pull.head.ref)"
+            @click.stop="copyToClipboard(pull.head.ref)"
           >
             <span un-truncate>{{ pull.head.ref }}</span>
           </QChip>
@@ -138,6 +131,7 @@ function copyToClipboard(value: string) {
         dense
         round
         :href="pull.html_url"
+        @click.stop
       >
         <i
           class="i-mdi-open-in-new"

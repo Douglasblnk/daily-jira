@@ -5,10 +5,7 @@ import { marked } from 'marked'
 
 const props = defineProps<{
   pull: GithubPullRequest
-  modelValue: boolean
 }>()
-
-const model = useVModel(props, 'modelValue')
 
 function getBlockquoteType(html: string | undefined) {
   if (html?.includes('[!note]')) {
@@ -53,7 +50,6 @@ const pullBody = computed(() => {
 
 <template>
   <QMenu
-    v-model="model"
     cover
     fit
     max-width="200px"
