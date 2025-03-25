@@ -57,12 +57,20 @@ export const colors = {
     secondary: '#23272B',
     card: '#252628',
   },
-  download: '#81aa7b',
+
+  approved: '#81aa7b',
   positive: '#21BA45',
   negative: '#F56C6C',
   info: '#31CCEC',
   warning: '#F2C037',
   cancel: '#767981',
+
+  branch: {
+    text: '#5887e2',
+    bg: '#273142',
+  },
+
+  draft: '#666b75',
 
   primary: '#2f313a',
   secondary: '#A4C2E4',
@@ -81,7 +89,7 @@ export default defineConfig({
       sm: '600px',
       md: '1024px',
       lg: '1440px',
-      xl: '1920px',
+      xl: '1921px',
       xxl: '2560px',
     },
 

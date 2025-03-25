@@ -39,6 +39,12 @@ export default defineConfig({
         'vue/macros',
         'pinia',
         'quasar',
+        {
+          '@tanstack/vue-query': [
+            'useQuery',
+            'useInfiniteQuery',
+          ],
+        },
       ],
     }),
     Components({

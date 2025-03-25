@@ -53,116 +53,135 @@ function handleDraggable(data: Shortcuts[]) {
     un-gap-sm
     un-mt-7xl
   >
-    <Draggable
-      item-key="url"
-      animation="150"
-      type="transition-group"
-      :model-value="shortcuts"
-      :component-data="{ class: 'flex gap-sm' }"
-      @update:model-value="handleDraggable"
-    >
-      <template #item="{ element: item, index }">
-        <QBtn
-          :key="`shortcuts-${index}-${item.url}`"
-          un-p="y-md x-lg"
-          un-rounded-3xl
-          un-cursor-pointer
-          un-select-none
-          un-transition="all"
-          un-hover-bg="#2f313a/70"
-          un-hover-translate-y--1
-          un-hover-scale-105
-          un-active-scale-100
-          un-bg="#2f313a/30"
-          un-flex
-          un-justify-center
-          un-items-center
-          un-gap-lg
-          flat
-          :href="item.url"
-        >
-          <img
-            un-w-10
-            un-h-10
-            :draggable="false"
-            :src="item.ico"
+    <div un-relative>
+      <Draggable
+        item-key="url"
+        animation="150"
+        type="transition-group"
+        :model-value="shortcuts"
+        group="description"
+        :disabled="false"
+        ghost-class="ghost"
+        :component-data="{
+          class: 'flex gap-sm',
+          type: 'transition-group',
+          tag: 'a',
+          name: 'flip-list-move',
+        }"
+        @update:model-value="handleDraggable"
+      >
+        <template #item="{ element: item, index }">
+          <QBtn
+            :key="`shortcuts-${index}-${item.url}`"
+            un-p="y-md x-lg"
+            un-rounded-3xl
+            un-cursor-pointer
+            un-select-none
+            un-transition="all"
+            un-hover-bg="#2f313a/70"
+            un-hover-translate-y--1
+            un-hover-scale-105
+            un-active-scale-100
+            un-bg="#2f313a/30"
+            un-flex
+            un-justify-center
+            un-items-center
+            un-gap-lg
+            flat
+            :href="item.url"
           >
+            <img
+              un-w-10
+              un-h-10
+              :draggable="false"
+              :src="item.ico"
+            >
 
-          <QMenu
-            :ref="el => { editShortcutRef[index] = el }"
-            touch-position
-            context-menu
-          >
-            <QList un-space-y-xs>
-              <QItem
-                v-ripple
-                clickable
-                @click="editShortcut(index)"
-              >
-                <QItemSection avatar>
-                  <i
-                    class="i-mdi-pencil-outline"
-                    un-text-md
-                  />
-                </QItemSection>
+            <QMenu
+              :ref="el => { editShortcutRef[index] = el }"
+              touch-position
+              context-menu
+            >
+              <QList un-space-y-xs>
+                <QItem
+                  v-ripple
+                  clickable
+                  @click="editShortcut(index)"
+                >
+                  <QItemSection avatar>
+                    <i
+                      class="i-mdi-pencil-outline"
+                      un-text-md
+                    />
+                  </QItemSection>
 
-                <QItemSection un-font-bold>
-                  Editar
-                </QItemSection>
-              </QItem>
+                  <QItemSection un-font-bold>
+                    Editar
+                  </QItemSection>
+                </QItem>
 
-              <QItem
-                v-ripple
-                clickable
-                @click="deleteShortcut(index)"
-              >
-                <QItemSection avatar>
-                  <i
-                    class="i-mdi-trash-can-outline"
-                    un-text-md
-                  />
-                </QItemSection>
+                <QItem
+                  v-ripple
+                  clickable
+                  @click="deleteShortcut(index)"
+                >
+                  <QItemSection avatar>
+                    <i
+                      class="i-mdi-trash-can-outline"
+                      un-text-md
+                    />
+                  </QItemSection>
 
-                <QItemSection un-font-bold>
-                  Excluir
-                </QItemSection>
-              </QItem>
-            </QList>
-          </QMenu>
+                  <QItemSection un-font-bold>
+                    Excluir
+                  </QItemSection>
+                </QItem>
+              </QList>
+            </QMenu>
 
-          <AddShortcutMenu
-            :ref="el => { editingShortcutRef[index] = el }"
-            context-menu
-            :value="item.url"
-            @save-url="updateShortcut($event, index)"
-          />
-        </QBtn>
-      </template>
-    </Draggable>
+            <AddShortcutMenu
+              :ref="el => { editingShortcutRef[index] = el }"
+              context-menu
+              :value="item.url"
+              @save-url="updateShortcut($event, index)"
+            />
+          </QBtn>
+        </template>
+      </Draggable>
 
-    <QBtn
-      un-p-sm
-      un-rounded-2xl
-      un-cursor-pointer
-      un-select-none
-      un-transition="all"
-      un-hover-bg="#2f313a/70"
-      un-bg-transparent
-      un-hover-opacity-100
-      un-active-scale-90
-      un-flex
-      un-justify-center
-      un-items-center
-      un-gap-lg
-      :un-opacity="shortcuts.length ? 10 : 100"
-      flat
-    >
-      <i
-        class="i-mdi-plus"
-        un-text="white 3xl"
-      />
+      <QBtn
+        un-p-sm
+        un-absolute
+        un-right--15
+        un-bottom-3
+        un-rounded-2xl
+        un-cursor-pointer
+        un-select-none
+        un-transition="all"
+        un-hover-bg="#2f313a/70"
+        un-bg-transparent
+        un-hover-opacity-100
+        un-active-scale-90
+        un-flex
+        un-justify-center
+        un-items-center
+        un-gap-lg
+        :un-opacity="shortcuts.length ? 10 : 100"
+        flat
+      >
+        <i
+          class="i-mdi-plus"
+          un-text="white 3xl"
+        />
 
-      <AddShortcutMenu @save-url="saveShortcut" />
-    </QBtn>
+        <AddShortcutMenu @save-url="saveShortcut" />
+      </QBtn>
+    </div>
   </div>
 </template>
+
+<style>
+.flip-list-move {
+  transition: transform 0.5s;
+}
+</style>

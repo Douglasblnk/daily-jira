@@ -9,7 +9,13 @@ $q.dark.set(true)
     <Shortcuts />
   </div>
 
-  <div>
-    poxa vida
+  <div
+    un-grid="~ cols-2 gap-lg"
+    un-mt-2xl
+    un-p-2xl
+  >
+    <QSpace />
+
+    <GithubSection />
   </div>
 </template>
