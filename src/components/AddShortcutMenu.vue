@@ -49,13 +49,6 @@ defineExpose({
   >
     <QCard un-w-100>
       <QCardSection
-        un-text="lg center"
-        un-font-bold
-      >
-        Adicionar atalho
-      </QCardSection>
-
-      <QCardSection
         un-text-md
         un-font-bold
         un-flex
