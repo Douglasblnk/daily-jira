@@ -43,6 +43,7 @@ export default defineConfig({
           '@tanstack/vue-query': [
             'useQuery',
             'useInfiniteQuery',
+            'useMutation',
           ],
         },
       ],
