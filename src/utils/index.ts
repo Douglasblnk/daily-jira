@@ -28,3 +28,21 @@ export function getBrightness(hexColor: string) {
 export function isTooBright(hexColor: string, threshold = 128) {
   return getBrightness(hexColor) > threshold
 }
+
+export const isObject = (value: unknown): value is object => !!value && typeof value === 'object' && !Array.isArray(value)
+
+export function hasValue(value: Array<unknown> | unknown): boolean {
+  if (Array.isArray(value)) {
+    return value.length > 0
+  }
+
+  if (isObject(value)) {
+    return Object.keys(value).length > 0
+  }
+
+  if (typeof value === 'string') {
+    return value.trim() !== ''
+  }
+
+  return value !== undefined && value !== null
+}
