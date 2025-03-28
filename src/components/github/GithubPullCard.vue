@@ -46,13 +46,6 @@ function copyToClipboard(value: string) {
         un-bg-draft
         dense
       >
-        <i
-          class="i-custom-draft text-white"
-          un-w-16px
-          un-h-16px
-          un-mr-sm
-        />
-
         Draft
       </QChip>
 
