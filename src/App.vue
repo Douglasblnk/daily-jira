@@ -1,4 +1,6 @@
 <script setup lang="ts">
+useHandleFirstAccess().setup()
+
 const $q = useQuasar()
 
 $q.dark.set(true)
@@ -18,4 +20,6 @@ $q.dark.set(true)
 
     <GithubSection />
   </div>
+
+  <FirstAccessModal />
 </template>
