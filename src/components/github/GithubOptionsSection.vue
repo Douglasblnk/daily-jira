@@ -6,10 +6,6 @@ defineProps<{
   pulls: GithubPullRequest[] | undefined
   isLoading: boolean
 }>()
-
-const emit = defineEmits<{
-  refetch: []
-}>()
 </script>
 
 <template>
@@ -33,22 +29,11 @@ const emit = defineEmits<{
 
     <span
       v-else
-      un-text="md gray-text/40"
+      un-text="md gray-text/60"
       un-mt-12px
     >
       {{ getAllOpenPullRequestsCount(pulls) }} Pull Requests
     </span>
-  </div>
-
-  <div
-    un-text="2xl gray-text"
-    un-absolute
-    un-top--1
-    un-right-3
-    un-cursor-pointer
-    @click="emit('refetch')"
-  >
-    <i class="i-mdi-reload" />
   </div>
 
   <GithubPullsOptions
