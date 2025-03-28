@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import type { GithubPullRequest } from '@/types/github-pulls'
+import { hasValue } from '@/utils'
 import { getApprovedPullRequests, getMyPullRequests, getNeedMyReviewPullRequests, getPriorityPullRequests } from '@/utils/github'
 
-const { data, isPending, refetch } = useQuery({
+const { firstAccess } = useHandleFirstAccess()
+
+const { data, isPending } = useQuery({
   queryKey: [ 'pull-requests' ],
   queryFn: getAllPullRequests,
+  enabled: computed(() => hasValue(firstAccess.value)),
 })
 
 const store = useGithubStore()
@@ -26,10 +30,14 @@ const mappedPullRequests = computed(() => {
 
   return pullRequestsMappers[store.option](data.value)
 })
+
+const suggestions = computed(() => {
+  return getNeedMyReviewPullRequests(data.value)
+})
 </script>
 
 <template>
-  <div un-space-y-md>
+  <div un-space-y-sm>
     <div
       un-space-y-md
       un-bg="#2f313a/30"
@@ -40,7 +48,6 @@ const mappedPullRequests = computed(() => {
       <GithubOptionsSection
         :pulls="data"
         :is-loading="isPending"
-        @refetch="refetch"
       />
     </div>
 
@@ -54,7 +61,7 @@ const mappedPullRequests = computed(() => {
       >
         <GithubPullRequestsSuggestions
           title="Sugestão de revisão"
-          :pulls="data"
+          :pulls="suggestions"
           :is-loading="isPending"
         />
       </div>
@@ -67,11 +74,20 @@ const mappedPullRequests = computed(() => {
         un-rounded-3xl
         un-relative
       >
-        <GithubPullRequestsList
-          :title="pullRequestsTitle[store.option]"
-          :pulls="mappedPullRequests"
-          :is-loading="isPending"
-        />
+        <Transition
+          enter-active-class="transition-all duration-200 ease-in-out"
+          leave-active-class="transition-all duration-200 ease-in-out"
+          enter-from-class="opacity-0 blur-sm translate-x-10px"
+          leave-to-class="opacity-0 blur-sm translate-x-10px"
+          mode="out-in"
+        >
+          <GithubPullRequestsList
+            :key="store.option"
+            :title="pullRequestsTitle[store.option]"
+            :pulls="mappedPullRequests"
+            :is-loading="isPending"
+          />
+        </Transition>
       </div>
     </div>
   </div>

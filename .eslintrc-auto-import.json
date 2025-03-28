@@ -103,6 +103,14 @@
     "getAllPullRequests": true,
     "useAlertsStore": true,
     "useGithubStore": true,
-    "getPullRequestFiles": true
+    "getPullRequestFiles": true,
+    "approvePullRequest": true,
+    "useMutation": true,
+    "createGist": true,
+    "useHandleFirstAccess": true,
+    "createShortcutGist": true,
+    "getGist": true,
+    "getGists": true,
+    "updateGist": true
   }
 }
