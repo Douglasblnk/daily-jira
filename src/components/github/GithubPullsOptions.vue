@@ -26,7 +26,7 @@ function selectOption(opt: string) {
     un-gap-sm
   >
     <GithubPullsCountCard
-      title="PRs para revisar"
+      title="Para revisar"
       un-text-info
       :is-loading="isLoading"
       :class="store.option === 'review' ? 'selected-option' : 'opacity-50'"
@@ -35,7 +35,7 @@ function selectOption(opt: string) {
     />
 
     <GithubPullsCountCard
-      title="PRs prioritários"
+      title="Prioritários"
       un-text-negative
       :is-loading="isLoading"
       :class="store.option === 'priority' ? 'selected-option' : 'opacity-50'"
@@ -44,7 +44,7 @@ function selectOption(opt: string) {
     />
 
     <GithubPullsCountCard
-      title="PRs meus"
+      title="Meus"
       un-text-positive
       :is-loading="isLoading"
       :class="store.option === 'mine' ? 'selected-option' : 'opacity-50'"
@@ -53,8 +53,8 @@ function selectOption(opt: string) {
     />
 
     <GithubPullsCountCard
-      title="PRs aprovados"
-      un-text-approved
+      title="Aprovados"
+      un-text-approved-prs
       :is-loading="isLoading"
       :class="store.option === 'approved' ? 'selected-option' : 'opacity-50'"
       :count="getApprovedPullRequestsCount(pulls)"

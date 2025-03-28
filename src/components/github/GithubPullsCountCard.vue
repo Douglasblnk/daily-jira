@@ -10,6 +10,7 @@ defineProps<{
   <QBtn
     un-bg="#2f313a/40"
     un-rounded-full
+    un-px-lg
     flat
     un-text-md
     un-font-bold
