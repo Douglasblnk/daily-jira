@@ -4,6 +4,7 @@ export function getNeedMyReviewPullRequests(pulls: GithubPullRequest[] = []) {
   return pulls.filter((pull) => {
     return pull.labels.every(label => label.name !== 'approved')
       && pull.requested_reviewers.some(reviewer => reviewer.login === 'Douglasblnk')
+      && pull.user.type !== 'Bot'
   })
 }
 
@@ -12,11 +13,19 @@ export function getMyPullRequests(pulls: GithubPullRequest[] = []) {
 }
 
 export function getPriorityPullRequests(pulls: GithubPullRequest[] = []) {
-  return pulls.filter(pull => pull.labels.some(label => label.name === 'priority'))
+  return pulls.filter(pull =>
+    pull.labels.some(label => label.name === 'priority')
+    && pull.labels.every(label => label.name !== 'approved'),
+  )
 }
 
 export function getApprovedPullRequests(pulls: GithubPullRequest[] = []) {
-  return pulls.filter(pull => pull.labels.some(label => label.name === 'approved'))
+  return pulls
+    .filter(pull => pull.labels.some(label => label.name === 'approved')
+      || (pull.requested_reviewers.every(reviewer => reviewer.login !== 'Douglasblnk')
+        && pull.user.login !== 'Douglasblnk'
+      ),
+    )
 }
 
 // Counts
