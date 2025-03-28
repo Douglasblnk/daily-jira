@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import type { GithubPullRequest } from '@/types/github-pulls'
+import type { QMenu } from 'quasar'
+import { useQueryClient } from '@tanstack/vue-query'
 import { useVModel } from '@vueuse/core'
 import { marked } from 'marked'
 
 const props = defineProps<{
   pull: GithubPullRequest
 }>()
+
+const queryClient = useQueryClient()
+const qMenuRef = ref<QMenu>()
 
 function getBlockquoteType(html: string | undefined) {
   if (html?.includes('[!note]')) {
@@ -44,16 +49,35 @@ function preprocessBlockquote(md: string) {
 }
 
 const pullBody = computed(() => {
-  return preprocessBlockquote(marked.parse(props.pull.body) as string)
+  return props.pull.body && preprocessBlockquote(marked.parse(props.pull.body) as string)
+})
+
+const { mutateAsync, isPending } = useMutation({
+  mutationKey: [ 'approve-pr' ],
+  mutationFn: async () => {
+    await approvePullRequest(props.pull.number)
+    await queryClient.invalidateQueries({ queryKey: [ 'pull-requests' ] })
+  },
+})
+
+async function approvePr() {
+  await mutateAsync()
+
+  qMenuRef.value?.hide()
+}
+
+const canApprove = computed(() => {
+  return props.pull.labels.every(label => label.name !== 'approved')
+    && props.pull.requested_reviewers.some(reviewer => reviewer.login === 'Douglasblnk')
 })
 </script>
 
 <template>
   <QMenu
+    ref="qMenuRef"
     cover
     fit
     max-width="200px"
-    un-bg-transparent
     un-border="1px solid primary"
     un-relative
   >
@@ -63,9 +87,29 @@ const pullBody = computed(() => {
       un-mb="!none"
     />
 
-    <QCard un-p-md>
+    <QCard
+      v-if="pullBody"
+      un-p-md
+    >
       <QCardSection un-bg="#2f313a/50">
         <div v-html="pullBody" />
+      </QCardSection>
+    </QCard>
+
+    <QCard
+      v-if="canApprove"
+      un-sticky
+      un-bottom--1
+      style="background: linear-gradient(0deg, black, transparent);"
+    >
+      <QCardSection un-text-center>
+        <QBtn
+          label="Aprovar"
+          un-w-col-6
+          un-bg-approved-review
+          :loading="isPending"
+          @click="approvePr"
+        />
       </QCardSection>
     </QCard>
   </QMenu>
