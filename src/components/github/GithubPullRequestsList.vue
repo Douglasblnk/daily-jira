@@ -20,31 +20,36 @@ defineProps<{
 
     <GithubPullRequestListSkeleton
       v-if="isLoading"
-      un-h="xl:52vh 49vh"
+      un-h="xl:54vh 52vh"
     />
 
-    <div
-      v-else
-      id="github-pulls-list"
-      un-h="xl:52vh 50vh"
-      un-overflow-auto
-    >
+    <template v-else>
+      <div
+        v-if="!pulls?.length"
+        un-text="center lg gray-text"
+        un-font-bold
+        un-mt-xl
+      >
+        Nem Pull Request encontrado.
+      </div>
+
       <QVirtualScroll
+        v-else
         v-slot="{ item, index }"
-        scroll-target="#github-pulls-list"
+        un-h="xl:54vh 52vh"
         un-bg-transparent
         un-pr-sm
         virtual-scroll-item-size="100"
         :items="pulls"
       >
         <GithubPullCard
-          :key="index"
+          :key="item.id + index"
           :pull="item"
           un-bg="#2f313a/40"
           :un-opacity="item.draft ? '60' : '100'"
           clickable
         />
       </QVirtualScroll>
-    </div>
+    </template>
   </div>
 </template>
