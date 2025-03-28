@@ -58,7 +58,11 @@ export const colors = {
     card: '#252628',
   },
 
-  approved: '#81aa7b',
+  approved: {
+    review: '#4c7b3e',
+    prs: '#81aa7b',
+  },
+
   positive: '#21BA45',
   negative: '#F56C6C',
   info: '#31CCEC',
