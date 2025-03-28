@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import type { QMenu } from 'quasar'
+import { hasValue } from '@/utils'
 import { useStorage } from '@vueuse/core'
+import { Notify, type QMenu } from 'quasar'
 import Draggable from 'vuedraggable/src/vuedraggable'
 import AddShortcutMenu from './AddShortcutMenu.vue'
 
@@ -10,22 +11,63 @@ interface Shortcuts {
 }
 
 const shortcuts = useStorage<Shortcuts[]>('shortcuts', [])
+const { firstAccess } = useHandleFirstAccess()
+
+const { data } = useQuery({
+  queryKey: [ 'get-shortcuts' ],
+  queryFn: () => getGist(firstAccess.value?.gistId),
+  enabled: computed(() => !shortcuts.value.length && hasValue(firstAccess.value)),
+})
+
+watch(data, (value) => {
+  const file = value?.data?.files?.['shortcuts.json']
+
+  if (file) {
+    const parsedContent = JSON.parse(file.content || '')
+
+    shortcuts.value = parsedContent
+  }
+})
 
 const editShortcutRef = ref<Record<string, any>>({})
 const editingShortcutRef = ref<Record<string, any>>({})
 
-function saveShortcut(value: string) {
-  shortcuts.value.push({
-    ico: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${value}&size=48`,
-    url: value,
-  })
+async function saveShortcut(value: string) {
+  try {
+    shortcuts.value.push({
+      ico: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${value}&size=48`,
+      url: value,
+    })
+
+    await updateGist(firstAccess.value?.gistId || '', JSON.stringify(shortcuts.value))
+  }
+
+  catch (err) {
+    Notify.create({
+      message: JSON.stringify(err),
+      timeout: 3000,
+      type: 'negative',
+    })
+  }
 }
 
-function updateShortcut(value: string, index: number) {
-  shortcuts.value.splice(index, 1, {
-    ico: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${value}&size=48`,
-    url: value,
-  })
+async function updateShortcut(value: string, index: number) {
+  try {
+    shortcuts.value.splice(index, 1, {
+      ico: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${value}&size=48`,
+      url: value,
+    })
+
+    await updateGist(firstAccess.value?.gistId || '', JSON.stringify(shortcuts.value))
+  }
+
+  catch (err) {
+    Notify.create({
+      message: JSON.stringify(err),
+      timeout: 3000,
+      type: 'negative',
+    })
+  }
 }
 
 function editShortcut(index: number) {
@@ -34,14 +76,40 @@ function editShortcut(index: number) {
   editingShortcutRef.value?.[index]?.addShortcutMenuRef?.show()
 }
 
-function deleteShortcut(index: number) {
-  shortcuts.value.splice(index, 1)
+async function deleteShortcut(index: number) {
+  try {
+    shortcuts.value.splice(index, 1)
 
-  editShortcutRef.value?.[index]?.hide()
+    await updateGist(firstAccess.value?.gistId || '', JSON.stringify(shortcuts.value))
+  }
+
+  catch (err) {
+    Notify.create({
+      message: JSON.stringify(err),
+      timeout: 3000,
+      type: 'negative',
+    })
+  }
+
+  finally {
+    editShortcutRef.value?.[index]?.hide()
+  }
 }
 
-function handleDraggable(data: Shortcuts[]) {
-  shortcuts.value = data
+async function handleDraggable(shortcut: Shortcuts[]) {
+  try {
+    shortcuts.value = shortcut
+
+    await updateGist(firstAccess.value?.gistId || '', JSON.stringify(shortcuts.value))
+  }
+
+  catch (err) {
+    Notify.create({
+      message: JSON.stringify(err),
+      timeout: 3000,
+      type: 'negative',
+    })
+  }
 }
 </script>
 
@@ -102,7 +170,10 @@ function handleDraggable(data: Shortcuts[]) {
               touch-position
               context-menu
             >
-              <QList un-space-y-xs>
+              <QList
+                un-space-y-xs
+                un-p-sm
+              >
                 <QItem
                   v-ripple
                   clickable
