@@ -22,13 +22,19 @@ jobs:
               pull_number: prNumber,
             });
 
-            const approvedReviews = reviews.filter(review => review.state === 'APPROVED');
+            const approvedReviews = new Set();
 
-            if (approvedReviews.length >= 2) {
+            for (const review of reviews) {
+              if (review.state === 'APPROVED') {
+                approvedReviews.add(review.user.login);
+              }
+            }
+
+            if (approvedReviews.size >= 2) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: prNumber,
-                labels: ['approved']
+                labels: ['approved'] // change this to your desired label
               });
             }
