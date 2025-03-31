@@ -6,6 +6,7 @@ on:
 
 jobs:
   label-if-approved:
+    permissions: write-all
     runs-on: ubuntu-latest
 
     steps:
@@ -34,6 +35,6 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: prNumber,
-                labels: ['ready-to-merge'] // change this to your desired label
+                labels: ['approved'] // change this to your desired label
               });
             }
