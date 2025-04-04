@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { GithubPullRequest } from '@/types/github-pulls'
-import { hasValue } from '@/utils'
+import { dayjs, hasValue } from '@/utils'
 import { calcPriorityScore, calcPullSizeScore, calcReviewsLeftScore, calcScopeScore, calcSpentTimeScore, calcTypeScore, calcUserScore } from '@/utils/github'
 import { useStorage } from '@vueuse/core'
 
@@ -14,14 +14,17 @@ const props = defineProps<{
 // e não é adicionado mais para a sugestão até o dia seguinte
 
 interface Suggestions {
-  score: number
-  pull: GithubPullRequest & {
-    changedFiles: number
-    codeChanges: number
-  }
+  createdAt: string
+  sortedSuggestions: {
+    score: number
+    pull: GithubPullRequest & {
+      changedFiles: number
+      codeChanges: number
+    }
+  }[]
 }
 
-const suggestions = useStorage<Suggestions[]>('suggestions', [])
+const suggestions = useStorage<Partial<Suggestions>>('suggestions', {})
 
 const suggestionLoading = ref()
 
@@ -67,12 +70,23 @@ async function createSuggestions(pulls?: GithubPullRequest[]) {
 
   const sortedSuggestions = shuffledSuggestions.sort((a, b) => b.score - a.score).slice(0, 3)
 
-  suggestions.value = sortedSuggestions
+  suggestions.value = {
+    createdAt: dayjs().format('YYYY-MM-DD'),
+    sortedSuggestions,
+  }
 
   suggestionLoading.value = false
 }
 
 watch(() => props.pulls, createSuggestions)
+
+onMounted(() => {
+  const createdAt = suggestions.value.createdAt
+
+  if (dayjs(createdAt).isBefore(dayjs(), 'D')) {
+    suggestions.value = {}
+  }
+})
 </script>
 
 <template>
@@ -97,7 +111,7 @@ watch(() => props.pulls, createSuggestions)
         un-bg-transparent
         un-pr-sm
         virtual-scroll-item-size="260"
-        :items="suggestions"
+        :items="suggestions.sortedSuggestions"
       >
         <GithubPullCardCondensed
           :key="item.pull.id + index"
