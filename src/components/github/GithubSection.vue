@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { GithubPullRequest } from '@/types/github-pulls'
 import { hasValue } from '@/utils'
-import { getApprovedPullRequests, getMyPullRequests, getNeedMyReviewPullRequests, getPriorityPullRequests } from '@/utils/github'
+import { calcScopeScore, getApprovedPullRequests, getMyPullRequests, getNeedMyReviewPullRequests, getPriorityPullRequests } from '@/utils/github'
 
 const { firstAccess } = useHandleFirstAccess()
 
@@ -32,7 +32,7 @@ const mappedPullRequests = computed(() => {
 })
 
 const suggestions = computed(() => {
-  return getNeedMyReviewPullRequests(data.value)
+  return getNeedMyReviewPullRequests(data.value).filter(pull => !pull.draft)
 })
 </script>
 

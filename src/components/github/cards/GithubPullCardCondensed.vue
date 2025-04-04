@@ -4,8 +4,16 @@ import { formatRelativeTime, isTooBright } from '@/utils'
 import { useClipboard } from '@vueuse/core'
 import { Notify } from 'quasar'
 
+interface Suggestions {
+  score: number
+  pull: GithubPullRequest & {
+    changedFiles: number
+    codeChanges: number
+  }
+}
+
 defineProps<{
-  pull: GithubPullRequest
+  suggestions: Suggestions
 }>()
 
 const { copy } = useClipboard()
@@ -27,7 +35,7 @@ function copyToClipboard(value: string) {
     un-mb-sm
   >
     <GithubPullRequestDetails
-      :pull="pull"
+      :pull="suggestions.pull"
       max-width="600px"
     />
 
@@ -47,11 +55,11 @@ function copyToClipboard(value: string) {
           <QAvatar
             size="md"
           >
-            <img :src="pull.user.avatar_url">
+            <img :src="suggestions.pull.user.avatar_url">
           </QAvatar>
 
           <div>
-            {{ formatRelativeTime(pull.created_at) }}
+            {{ formatRelativeTime(suggestions.pull.created_at) }}
           </div>
         </div>
 
@@ -60,7 +68,7 @@ function copyToClipboard(value: string) {
           flat
           dense
           round
-          :href="pull.html_url"
+          :href="suggestions.pull.html_url"
           @click.stop
         >
           <i
@@ -74,7 +82,7 @@ function copyToClipboard(value: string) {
         un-font-bold
         un-text-base
       >
-        {{ pull.title }}
+        {{ suggestions.pull.title }}
       </QItemLabel>
 
       <QItemLabel
@@ -93,10 +101,10 @@ function copyToClipboard(value: string) {
             un-max-w-100px
             dense
             clickable
-            :title="pull.base.ref"
-            @click.stop="copyToClipboard(pull.base.ref)"
+            :title="suggestions.pull.base.ref"
+            @click.stop="copyToClipboard(suggestions.pull.base.ref)"
           >
-            <span un-truncate>{{ pull.base.ref }}</span>
+            <span un-truncate>{{ suggestions.pull.base.ref }}</span>
           </QChip>
 
           <i
@@ -111,35 +119,64 @@ function copyToClipboard(value: string) {
             un-max-w-100px
             dense
             clickable
-            :title="pull.head.ref"
-            @click.stop="copyToClipboard(pull.head.ref)"
+            :title="suggestions.pull.head.ref"
+            @click.stop="copyToClipboard(suggestions.pull.head.ref)"
           >
-            <span un-truncate>{{ pull.head.ref }}</span>
+            <span un-truncate>{{ suggestions.pull.head.ref }}</span>
           </QChip>
         </div>
       </QItemLabel>
 
       <QItemLabel
         un-flex
-        un-items-center
-        un-gap-sm
+        un-justify-between
       >
-        <QBadge
-          v-for="label in pull.labels"
-          :key="label.id"
-          :style="{ backgroundColor: `#${label.color}`, color: isTooBright(`#${label.color}`) ? 'black' : 'white' }"
+        <div
+          un-flex
+          un-items-center
+          un-gap-sm
         >
-          {{ label.name }}
-        </QBadge>
+          <QBadge
+            v-for="label in suggestions.pull.labels"
+            :key="label.id"
+            :style="{ backgroundColor: `#${label.color}`, color: isTooBright(`#${label.color}`) ? 'black' : 'white' }"
+          >
+            {{ label.name }}
+          </QBadge>
+        </div>
+
+        <div
+          un-flex
+          un-items-center
+          un-gap-xs
+          un-text-xs
+        >
+          <QBadge
+            un-flex
+            un-items-center
+            un-gap-xs
+            un-bg-accent
+            un-font-bold
+          >
+            <i class="i-mdi-file-multiple-outline" />
+            {{ suggestions.pull.changedFiles }}
+          </QBadge>
+
+          <QBadge
+            un-flex
+            un-items-center
+            un-gap-xs
+            un-bg-approved-review
+            un-font-bold
+          >
+            <i class="i-mdi-code-braces" />
+
+            <span>
+              {{ suggestions.pull.codeChanges }}
+            </span>
+          </QBadge>
+        </div>
       </QItemLabel>
     </QItemSection>
-
-    <!-- <QItemSection
-      side
-      un-flex
-      un-justify-between
-    >
-
-    </QItemSection> -->
   </QItem>
 </template>

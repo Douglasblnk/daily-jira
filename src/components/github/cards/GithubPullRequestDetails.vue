@@ -6,7 +6,10 @@ import { useVModel } from '@vueuse/core'
 import { marked } from 'marked'
 
 const props = defineProps<{
-  pull: GithubPullRequest
+  pull: GithubPullRequest & {
+    changedFiles?: number
+    codeChanges?: number
+  }
 }>()
 
 const queryClient = useQueryClient()

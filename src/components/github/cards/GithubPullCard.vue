@@ -5,7 +5,10 @@ import { useClipboard } from '@vueuse/core'
 import { Notify } from 'quasar'
 
 defineProps<{
-  pull: GithubPullRequest
+  pull: GithubPullRequest & {
+    changedFiles?: number
+    codeChanges?: number
+  }
 }>()
 
 const { copy } = useClipboard()
@@ -54,6 +57,41 @@ function copyToClipboard(value: string) {
         un-text-md
       >
         {{ pull.title }}
+      </QItemLabel>
+
+      <QItemLabel>
+        <div
+          v-if="pull.changedFiles && pull.codeChanges"
+          un-flex
+          un-items-center
+          un-gap-xs
+          un-text-xs
+        >
+          <QBadge
+            un-flex
+            un-items-center
+            un-gap-xs
+            un-bg-accent
+            un-font-bold
+          >
+            <i class="i-mdi-file-multiple-outline" />
+            {{ pull.changedFiles }}
+          </QBadge>
+
+          <QBadge
+            un-flex
+            un-items-center
+            un-gap-xs
+            un-bg-approved-review
+            un-font-bold
+          >
+            <i class="i-mdi-code-braces" />
+
+            <span>
+              {{ pull.codeChanges }}
+            </span>
+          </QBadge>
+        </div>
       </QItemLabel>
 
       <QItemLabel

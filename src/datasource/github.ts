@@ -9,6 +9,16 @@ export async function getAllPullRequests() {
   })
 }
 
+export async function getPullRequestFiles(number: number) {
+  const { data } = await octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/files', {
+    owner: 'multiplierx',
+    repo: 'front',
+    pull_number: number,
+  })
+
+  return data
+}
+
 export async function approvePullRequest(number: number) {
   return octokit.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {
     owner: 'multiplierx',
